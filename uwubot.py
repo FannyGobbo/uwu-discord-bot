@@ -91,7 +91,10 @@ async def recap(ctx):
     await ctx.send(message_content)
     
 
-
+@bot.command()
+async def repond(ctx, user):
+    for i in range(5):
+        await ctx.send("wesh " + user + " réponds !!!!!!")
 
 
 
