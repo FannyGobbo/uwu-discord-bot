@@ -20,7 +20,6 @@ async def on_ready():
 
 @bot.command()
 async def count(ctx, dd: int, MM: int, yyyy: int, hh: int, mm: int):
-    # Replace 'YOUR_CHANNEL_ID' with the actual channel ID
     channel_id = '1159147161255161906'
 
     # Convert the provided date and time arguments into a datetime object
@@ -52,6 +51,45 @@ async def count(ctx, dd: int, MM: int, yyyy: int, hh: int, mm: int):
 
     print(f'Messages written to {csv_file_path}')
 
+
+def parse_csv_file(file_path):
+    user_counts = {}
+    
+    with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=';')
+        
+        for row in reader:
+            user = row['User']
+            counts = {
+                'couscous': int(row['couscous']),
+                'kayak': int(row['kayak']),
+                'ck': int(row['ck']),
+                'Total': int(row['Total'])
+            }
+            
+            user_counts[user] = counts
+
+    return user_counts
+
+
+@bot.command()
+async def recap(ctx):
+    parsed_results = parse_csv_file("./results/global.csv")
+    parsed_sorted = dict(sorted(parsed_results.items(), key=lambda item: item[1]['Total'], reverse=True))
+    
+    user_l = "User"
+    filler = "-"
+    
+    message_content = "# Scores\n"
+    message_content += "```"+user_l.ljust(16, " ")+"| Couscous | Kayak | Combo | Total\n"
+    message_content+= filler.ljust(50, "-") + "\n"
+    
+    for user in parsed_sorted:
+        message_content += user.ljust(16, " ") +"| " + str(parsed_sorted[user]["couscous"]).ljust(8, " ")+" | " +str(parsed_sorted[user]["kayak"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["ck"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["Total"]) +"\n"
+    
+    message_content += "```"
+    await ctx.send(message_content)
+    
 
 
 
