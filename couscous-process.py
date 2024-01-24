@@ -121,6 +121,7 @@ def format_time(hour, minutes):
 def process_csv(file_path, user_counts):
     with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file)
+        timestamp_list = []
 
         for row in reader:
             # Convert timestamp to datetime object
@@ -131,17 +132,20 @@ def process_csv(file_path, user_counts):
             minutes = timestamp.minute
             hour, minutes = format_time(hour, minutes)
             
-            if len(message) > 3:
+            if (len(message) > 3) and not(timestamp_list and (timestamp_list[-1] == timestamp)) :
                 if hour == minutes:
                     if time_palindrome(hour, minutes):
                         if is_ck(message):  
                             user_counts['ck'][timestamp.month][user] += 1
+                            timestamp_list.append(timestamp)
                     else :
                         if is_couscous(message):
                             user_counts['couscous'][timestamp.month][user] += 1
+                            timestamp_list.append(timestamp)
                 elif time_palindrome(hour, minutes):
                     if is_kayak(message) :
                         user_counts['kayak'][timestamp.month][user] += 1
+                        timestamp_list.append(timestamp)
 
 
     return user_counts
