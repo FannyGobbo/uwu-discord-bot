@@ -24,6 +24,12 @@ Note the process of the file is not automatic.
 
 Print the score table in the desired channel
 
+<hr>
+
+> !repond @user
+
+Ping the user to ask them to answer 
+Note `@user` is to replace with the tag of the user you want
 
 ## Process calculations :
 After running the command `!count dd MM yyyy hh mm` in the discord server : 
