@@ -5,8 +5,8 @@ import hashlib
 import sys
 import os
 
-# Function to check if a string is a palindrome
-def is_palindrome(hour, minutes):
+# Function to check if a time is a palindrome
+def time_palindrome(hour, minutes):
     str_num1 = str(hour)
     str_num2 = str(minutes)
 
@@ -15,6 +15,33 @@ def is_palindrome(hour, minutes):
 
     # Check if the concatenated string is a palindrome
     return concatenated_str == concatenated_str[::-1]
+
+# Check if string is palindrome
+def is_kayak(s):
+    return s == s[::-1]
+
+def is_couscous(s):
+    if len(s)%2 != 0:
+        return False
+    else :
+        firstpart, secondpart = s[:len(s)//2], s[len(s)//2:]
+        return firstpart == secondpart
+    
+def is_ck(s) :
+    word_list = s.split()
+    if len(word_list) == 1 :
+        return is_kayak(s) and is_couscous(s)
+    elif len(word_list) == 2 :
+        return is_couscous(word_list[0]) and is_kayak(word_list[1])
+    else:
+        return False
+        
+
+
+
+##############################################################################################################################
+
+
 
 # Load results from a CSV file for a specific category (couscous, kayak, couscous_kayak)
 def load_results_from_csv():
@@ -72,6 +99,24 @@ def save_global_results(yearly_totals, global_totals):
                writer.writerow([user] + [str(yearly_totals[category][user]) for category in ['couscous', 'kayak', 'ck']] + [str(global_totals[user])])
 
 
+
+
+##############################################################################################################################
+
+
+def format_time(hour, minutes):
+    if hour < 10:
+        out_h = "0" + str(hour)
+    else:
+        out_h = str(hour)
+    if minutes < 10:
+        out_m = "0" + str(minutes)
+    else :
+        out_m = str(minutes)
+    return out_h, out_m
+
+
+
 # Process the new CSV file and update counts for a specific category (couscous, kayak, couscous_kayak)
 def process_csv(file_path, user_counts):
     with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
@@ -82,23 +127,21 @@ def process_csv(file_path, user_counts):
             timestamp = datetime.strptime(row['timestamp'], '%d/%m %H:%M')
             user = row['user'].lower()
             message = str(row['message']).lower()
-            hour = timestamp.hour + 1
+            hour = (timestamp.hour + 1) %24                                                       # Winter time, to be changed
             minutes = timestamp.minute
-
-            # Process "couscous" message
-            if message == 'couscous':
-                if hour== minutes:
-                    user_counts['couscous'][timestamp.month][user] += 1
-
-            # Process "kayak" message
-            elif message == 'kayak':
-                if is_palindrome(hour, minutes):
-                    user_counts['kayak'][timestamp.month][user] += 1
-
-            # Process "couscous kayak" message
-            elif message == 'couscous kayak':
-                if is_palindrome(hour, minutes) and hour == minutes:
-                    user_counts['ck'][timestamp.month][user] += 1
+            hour, minutes = format_time(hour, minutes)
+            
+            if len(message) > 3:
+                if hour == minutes:
+                    if time_palindrome(hour, minutes):
+                        if is_ck(message):  
+                            user_counts['ck'][timestamp.month][user] += 1
+                    else :
+                        if is_couscous(message):
+                            user_counts['couscous'][timestamp.month][user] += 1
+                elif time_palindrome(hour, minutes):
+                    if is_kayak(message) :
+                        user_counts['kayak'][timestamp.month][user] += 1
 
 
     return user_counts
@@ -113,6 +156,11 @@ def calculate_yearly_totals(user_counts):
 
     return yearly_totals
 
+
+##############################################################################################################################
+
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3.10 couscous-process.py <csv_file_path>")
@@ -120,19 +168,12 @@ if __name__ == "__main__":
 
     csv_file_path = sys.argv[1]
 
-
     user_counts = load_results_from_csv()
-    
-    #print(user_counts)
 
     # Process the new CSV file and update counts for each category
     user_counts = process_csv(csv_file_path, user_counts)
     
-#    print(user_counts["couscous"])
- #   print(user_counts["kayak"])
-  #  print(user_counts["ck"])
-
-    # Calculate yearly totals for each category
+    # Calculate yearly totals
     yearly_totals = {category: calculate_yearly_totals(user_counts[category]) for category in ['couscous', 'kayak', 'ck']}
     
     global_totals = defaultdict(int)
@@ -145,3 +186,4 @@ if __name__ == "__main__":
     save_results_to_csv(user_counts, yearly_totals)
 
     save_global_results(yearly_totals, global_totals)
+
