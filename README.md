@@ -12,9 +12,9 @@ Note that I use version 3.10 but use your version on python instead
 
 
 ## Discord Commands : 
-> !help
+> !help \<command>(optionnal)
 
-Print all the commands available
+Print all the commands available or the description of the specified commmand
 
 <hr>
 

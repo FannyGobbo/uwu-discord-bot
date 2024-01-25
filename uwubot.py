@@ -18,8 +18,13 @@ async def on_ready():
     print(f'We have logged in as {bot.user.name}')
     
 
-@bot.command()
-async def count(ctx, dd: int, MM: int, yyyy: int, hh: int, mm: int):
+@bot.command(name="count", help="Laissez Fanny faire siouplé")
+async def count(ctx, 
+                dd: int = commands.parameter(description="Jour"), 
+                MM: int = commands.parameter(description="Mois"), 
+                yyyy: int = commands.parameter(description="Année"), 
+                hh: int = commands.parameter(description="Heure"), 
+                mm: int = commands.parameter(description="Minutes")):
     channel_id = '1159147161255161906'
 
     # Convert the provided date and time arguments into a datetime object
@@ -72,7 +77,7 @@ def parse_csv_file(file_path):
     return user_counts
 
 
-@bot.command()
+@bot.command(name="recap", help="Récap des scores")
 async def recap(ctx):
     parsed_results = parse_csv_file("./results/global.csv")
     parsed_sorted = dict(sorted(parsed_results.items(), key=lambda item: item[1]['Total'], reverse=True))
@@ -91,27 +96,17 @@ async def recap(ctx):
     await ctx.send(message_content)
     
 
-@bot.command()
-async def repond(ctx, user):
+@bot.command(name="repond", help="Répond wesh !")
+async def repond(ctx, user : str = commands.parameter(description="Mention de l'utilisateur")):
     for i in range(5):
         await ctx.send("wesh " + user + " réponds !!!!!!")
 
 
 
-@bot.command()
+@bot.command(name="blip", help="Je suis un robot")
 async def blip(ctx):
     await ctx.send("```blip bloup je suis un robot```")
     
-
-@bot.command()
-async def help(ctx):
-    message_content = "# Commandes :\n"
-    message_content = "```" # open code quote
-    message_content = "!repond @user         - spam l'user tag pour qu'iel réponde\n"
-    message_content = "!blip                 - je suis un robot\n"
-    message_content = "!recap                - récap des scores du couscous"
-    message_content = "```" # close code quote
-    await ctx.send(message_content)
 
 
 # Run the bot with the token
