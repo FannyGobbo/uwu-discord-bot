@@ -98,6 +98,21 @@ async def repond(ctx, user):
 
 
 
+@bot.command()
+async def blip(ctx):
+    await ctx.send("```blip bloup je suis un robot```")
+    
+
+@bot.command()
+async def help(ctx):
+    message_content = "# Commandes :\n"
+    message_content = "```" # open code quote
+    message_content = "!repond @user         - spam l'user tag pour qu'iel réponde\n"
+    message_content = "!blip                 - je suis un robot\n"
+    message_content = "!recap                - récap des scores du couscous"
+    message_content = "```" # close code quote
+    await ctx.send(message_content)
+
 
 # Run the bot with the token
 bot.run(TOKEN)

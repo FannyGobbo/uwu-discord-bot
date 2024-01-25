@@ -12,6 +12,12 @@ Note that I use version 3.10 but use your version on python instead
 
 
 ## Discord Commands : 
+> !help
+
+Print all the commands available
+
+<hr>
+
 > !count dd MM yyyy hh mm
 
 Gives the historic of messages from Spam channel from the day and time in arguments. This will be saved into a file locally.
@@ -30,6 +36,12 @@ Print the score table in the desired channel
 
 Ping the user to ask them to answer 
 Note `@user` is to replace with the tag of the user you want
+
+<hr>
+
+> !blip
+
+Je suis un robot
 
 ## Process calculations :
 After running the command `!count dd MM yyyy hh mm` in the discord server : 
