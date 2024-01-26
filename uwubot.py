@@ -147,6 +147,7 @@ class Ping(commands.Cog, name="Ping Commands"):
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user.name}')
+    await bot.change_presence(activity=discord.CustomActivity(name="!help"))
     await bot.add_cog(Couscous(bot))
     await bot.add_cog(Custom(bot))
     await bot.add_cog(Ping(bot))
