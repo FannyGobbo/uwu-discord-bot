@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from datetime import datetime, timedelta
 import csv
+import re
+import random
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 with open("token", "r") as token_file:
@@ -143,6 +145,32 @@ class Ping(commands.Cog, name="Ping Commands"):
         
 
 ###########################################################################################################################################
+
+
+@bot.event
+async def on_message(message):
+    # Ignore messages from the bot itself to avoid potential infinite loops
+    if message.author == bot.user:
+        return
+
+    # Use a regular expression to find the part of the word after "di" or "cri" (case-insensitive)
+    match = re.search(r'(?:di|cri)(.*)', message.content, re.IGNORECASE)
+
+    if match and random.random() <= 0.25:
+        # Get the cut word and the matched prefix
+        cut_word = match.group(1)
+        word = match.group(0).lower()  # Get the matched word
+
+        if "cri" in word:
+            cut_word = cut_word.upper()
+            
+        await message.channel.send(f'`{cut_word}`')
+        
+        
+
+###########################################################################################################################################
+
+
 
 @bot.event
 async def on_ready():
