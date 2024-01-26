@@ -113,6 +113,15 @@ class Custom(commands.Cog, name="Custom Commands"):
         user : str = commands.parameter(description="Mention de l'utilisateur")):
         for i in range(5):
             await ctx.send("wesh " + user + " réponds !!!!!!")
+            
+    @commands.command(name="menace", help="This is a menace !")
+    async def menace(
+        self,
+        ctx,
+        user : str = commands.parameter(description="Mention de l'utilisateur"),
+        msg : str = commands.parameter(description="Message de menace")):
+
+        await ctx.send(user + " " + msg + " sinon conséquences...")
 
 
 ###########################################################################################################################################
