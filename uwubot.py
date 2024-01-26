@@ -14,6 +14,30 @@ intents.messages = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 
+
+
+def parse_csv_file(file_path):
+    user_counts = {}
+        
+    with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=';')
+            
+        for row in reader:
+            user = row['User']
+            counts = {
+                'couscous': int(row['couscous']),
+                'kayak': int(row['kayak']),
+                'ck': int(row['ck']),
+                'Total': int(row['Total'])
+            }
+                
+            user_counts[user] = counts
+
+    return user_counts
+
+
+
+
 ###########################################################################################################################################
 
  
@@ -60,25 +84,6 @@ class Couscous(commands.Cog, name="Couscous"):
 
         print(f'Messages written to {csv_file_path}')
 
-
-    def parse_csv_file(file_path):
-        user_counts = {}
-        
-        with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
-            reader = csv.DictReader(csv_file, delimiter=';')
-            
-            for row in reader:
-                user = row['User']
-                counts = {
-                    'couscous': int(row['couscous']),
-                    'kayak': int(row['kayak']),
-                    'ck': int(row['ck']),
-                    'Total': int(row['Total'])
-                }
-                
-                user_counts[user] = counts
-
-        return user_counts
 
     @commands.command(name="recap", help="Récap des scores")
     async def recap(self, ctx):
