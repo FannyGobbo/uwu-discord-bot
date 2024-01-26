@@ -94,11 +94,11 @@ class Couscous(commands.Cog, name="Couscous"):
         filler = "-"
         
         message_content = "# Scores\n"
-        message_content += "```"+user_l.ljust(16, " ")+"| Couscous | Kayak | Combo | Total\n"
-        message_content+= filler.ljust(50, "-") + "\n"
+        message_content += "```"+user_l.ljust(18, " ")+"| Couscous | Kayak | Combo | Total\n"
+        message_content+= filler.ljust(52, "-") + "\n"
         
         for user in parsed_sorted:
-            message_content += user.ljust(16, " ") +"| " + str(parsed_sorted[user]["couscous"]).ljust(8, " ")+" | " +str(parsed_sorted[user]["kayak"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["ck"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["Total"]) +"\n"
+            message_content += user.ljust(18, " ") +"| " + str(parsed_sorted[user]["couscous"]).ljust(8, " ")+" | " +str(parsed_sorted[user]["kayak"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["ck"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["Total"]) +"\n"
         
         message_content += "```"
         await ctx.send(message_content)
@@ -115,18 +115,19 @@ class Custom(commands.Cog, name="Custom Commands"):
     async def repond(
         self,
         ctx, 
-        user : str = commands.parameter(description="Mention de l'utilisateur")):
+        user : discord.User = commands.parameter(description="Mention de l'utilisateur")):
         for i in range(5):
-            await ctx.send("wesh " + user + " réponds !!!!!!")
+            await ctx.send("wesh " + user.mention + " réponds !!!!!!")
             
     @commands.command(name="menace", help="This is a menace !")
     async def menace(
         self,
         ctx,
-        user : str = commands.parameter(description="Mention de l'utilisateur"),
-        msg : str = commands.parameter(description="Message de menace")):
+        user : discord.User = commands.parameter(description="Mention de l'utilisateur"),
+        *, msg : str = commands.parameter(description="Message de menace")):
 
-        await ctx.send(user + " " + msg + " sinon conséquences...")
+        await ctx.message.delete()
+        await ctx.send(user.mention + " " + msg + " sinon conséquences...")
 
 
 ###########################################################################################################################################
