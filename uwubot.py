@@ -5,7 +5,12 @@ import csv
 import re
 import random
 
-# Replace 'YOUR_BOT_TOKEN' with your actual bot token
+
+# Constantes
+PROC_CHANCE = 0.25
+
+
+# Load Token
 with open("token", "r") as token_file:
     TOKEN = token_file.read().strip()
 
@@ -147,27 +152,26 @@ class Ping(commands.Cog, name="Ping Commands"):
 ###########################################################################################################################################
 
 
-@bot.event
-async def on_message(message):
+#@bot.event
+#async def on_message(message):
     # Ignore messages from the bot itself to avoid potential infinite loops
-    if message.author == bot.user:
-        return
+#    if message.author == bot.user:
+ #       return
 
     # Use a regular expression to find the part of the word after "di" or "cri" (case-insensitive)
-    match = re.search(r'(?:di|cri)(.*)', message.content, re.IGNORECASE)
+  #  match = re.search(r'(?:di|cri)(.*)', message.content, re.IGNORECASE)
 
-    if match and random.random() <= 0.25:
+   # if match and random.random() <= PROC_CHANCE:
         # Get the cut word and the matched prefix
-        cut_word = match.group(1)
-        word = match.group(0).lower()  # Get the matched word
+    #    cut_word = match.group(1)
+     #   word = match.group(0).lower()  # Get the matched word
 
-        if "cri" in word:
-            cut_word = cut_word.upper()
+      #  if "cri" in word:
+       #     cut_word = cut_word.upper()
             
-        await message.channel.send(f'`{cut_word}`')
-        
-        
-
+        #await message.channel.send(f'`{cut_word}`')       
+ 
+ 
 ###########################################################################################################################################
 
 
