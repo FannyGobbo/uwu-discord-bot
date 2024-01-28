@@ -142,6 +142,13 @@ class Custom(commands.Cog, name="Custom Commands"):
 
         await ctx.message.delete()
         await ctx.send(user.mention + " " + msg + " sinon conséquences...")
+        
+    
+    @commands.command(name="wannadie", help="L'image que Fanny met tout le temps quand elle est au bout de sa vie")
+    async def wannadie(self, ctx):
+        img_path = "./images/enviedecaner.jpg"
+        with open(img_path, 'rb') as image_file:
+            await ctx.send(file=discord.File(image_file, 'image.jpg'))
 
 
 ###########################################################################################################################################
