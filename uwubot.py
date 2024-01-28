@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import csv
 import re
 import random
+import os
 
 
 # Constantes
@@ -108,6 +109,12 @@ class Couscous(commands.Cog, name="Couscous"):
             message_content += user.ljust(18, " ") +"| " + str(parsed_sorted[user]["couscous"]).ljust(8, " ")+" | " +str(parsed_sorted[user]["kayak"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["ck"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["Total"]) +"\n"
         
         message_content += "```"
+        
+        last_modif_ts = os.path.getmtime("./results/global.csv")
+        last_modif_datetime = datetime.fromtimestamp(last_modif_ts)
+        
+        message_content += "Dernière M.À.J : " + last_modif_datetime.strftime("%d/%m/%Y - %H:%M")
+        
         await ctx.send(message_content)
     
 
