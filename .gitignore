@@ -2,3 +2,4 @@
 token
 messages-list/*
 results/*
+__pycache__/*

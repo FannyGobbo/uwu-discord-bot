@@ -163,19 +163,11 @@ def calculate_yearly_totals(user_counts):
 
 ##############################################################################################################################
 
-
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3.10 couscous-process.py <csv_file_path>")
-        sys.exit(1)
-
-    csv_file_path = sys.argv[1]
-
+def run_couscous_update (file_path):
     user_counts = load_results_from_csv()
 
     # Process the new CSV file and update counts for each category
-    user_counts = process_csv(csv_file_path, user_counts)
+    user_counts = process_csv(file_path, user_counts)
     
     # Calculate yearly totals
     yearly_totals = {category: calculate_yearly_totals(user_counts[category]) for category in ['couscous', 'kayak', 'ck']}
@@ -190,4 +182,16 @@ if __name__ == "__main__":
     save_results_to_csv(user_counts, yearly_totals)
 
     save_global_results(yearly_totals, global_totals)
+
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3.10 couscous-process.py <csv_file_path>")
+        sys.exit(1)
+
+    csv_file_path = sys.argv[1]
+    
+    run_couscous_update(csv_file_path)
+
 

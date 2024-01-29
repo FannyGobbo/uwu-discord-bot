@@ -5,10 +5,12 @@ import csv
 import re
 import random
 import os
+from couscous_process import run_couscous_update
 
 
 # Constantes
-PROC_CHANCE = 0.25
+# PROC_CHANCE = 0.25
+# use for di / cri function currently disabled
 
 
 # Load Token
@@ -61,36 +63,46 @@ class Couscous(commands.Cog, name="Couscous"):
                     yyyy: int = commands.parameter(description="Année"), 
                     hh: int = commands.parameter(description="Heure"), 
                     mm: int = commands.parameter(description="Minutes")):
-        channel_id = '1159147161255161906'
+        channel_id = '1159147161255161906' # Deploy
+        #channel_id = '798147472873750552'  # Dev
+        user_allowed = 498578445081509889
+        
+        if ctx.author.id == user_allowed :
+            # Convert the provided date and time arguments into a datetime object
+            start_date = datetime(yyyy, MM, dd, hh, mm, 0)
+            end_date = datetime.utcnow()
 
-        # Convert the provided date and time arguments into a datetime object
-        start_date = datetime(yyyy, MM, dd, hh, mm, 0)
-        end_date = datetime.utcnow()
+            channel = bot.get_channel(int(channel_id))
 
-        channel = bot.get_channel(int(channel_id))
+            # Fetch messages within the specified timeframe
+            messages = []
+            async for message in channel.history(limit=None, after=start_date, before=end_date):
+                messages.append({
+                    'timestamp': message.created_at.strftime('%d/%m %H:%M'),
+                    'user': message.author.name,
+                    'message': message.content
+                })
 
-        # Fetch messages within the specified timeframe
-        messages = []
-        async for message in channel.history(limit=None, after=start_date, before=end_date):
-            messages.append({
-                'timestamp': message.created_at.strftime('%d/%m %H:%M'),
-                'user': message.author.name,
-                'message': message.content
-            })
+            # Write messages to a CSV file
+            csv_file_path = f'messages-list/messages_{start_date.strftime("%Y%m%d%H%M")}_{end_date.strftime("%Y%m%d%H%M")}.csv'
+            with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
+                fieldnames = ['timestamp', 'user', 'message']
+                writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+                
+                # Write the header
+                writer.writeheader()
 
-        # Write messages to a CSV file
-        csv_file_path = f'messages-list/messages_{start_date.strftime("%Y%m%d%H%M")}_{end_date.strftime("%Y%m%d%H%M")}.csv'
-        with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
-            fieldnames = ['timestamp', 'user', 'message']
-            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+                # Write messages
+                writer.writerows(messages)
+
+            print(f'Messages written to {csv_file_path}')
             
-            # Write the header
-            writer.writeheader()
-
-            # Write messages
-            writer.writerows(messages)
-
-        print(f'Messages written to {csv_file_path}')
+            run_couscous_update(csv_file_path)
+            
+            await ctx.send("MAJ !")
+        
+        else : 
+            await ctx.send("@498578445081509889 -- recap pliz")
 
 
     @commands.command(name="recap", help="Récap des scores")

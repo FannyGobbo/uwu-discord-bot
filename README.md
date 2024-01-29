@@ -18,30 +18,9 @@ Print all the commands available or the description of the specified commmand
 
 <hr>
 
-> !count dd MM yyyy hh mm
-
-Gives the historic of messages from Spam channel from the day and time in arguments. This will be saved into a file locally.
-
-Note the process of the file is not automatic.
-
-<hr>
-
-> !recap
-
-Print the score table in the desired channel
-
-<hr>
-
-> !repond @user
-
-Ping the user to ask them to answer 
-Note `@user` is to replace with the tag of the user you want
-
-<hr>
-
 > !blip
 
-Je suis un robot
+Je suis un robot (Used as a ping)
 
 ## Process calculations :
 After running the command `!count dd MM yyyy hh mm` in the discord server : 
