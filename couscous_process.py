@@ -184,6 +184,27 @@ def run_couscous_update (file_path):
     save_global_results(yearly_totals, global_totals)
 
 
+def add_one_point (username, month, category):
+    user_counts = load_results_from_csv()
+    
+    user_counts[category][month][username] += 1
+    
+    # Calculate yearly totals
+    yearly_totals = {category: calculate_yearly_totals(user_counts[category]) for category in ['couscous', 'kayak', 'ck']}
+    
+    global_totals = defaultdict(int)
+    for user in yearly_totals["couscous"] :
+        value = 0
+        for category in ['couscous', 'kayak', 'ck']:
+            value += yearly_totals[category][user]
+        global_totals[user] = value
+    
+    save_results_to_csv(user_counts, yearly_totals)
+
+    save_global_results(yearly_totals, global_totals)
+    
+    
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

@@ -5,7 +5,7 @@ import csv
 import re
 import random
 import os
-from couscous_process import run_couscous_update
+from couscous_process import run_couscous_update, add_one_point
 
 
 # Constantes
@@ -65,7 +65,7 @@ class Couscous(commands.Cog, name="Couscous"):
                     mm: int = commands.parameter(description="Minutes")):
         channel_id = '1159147161255161906' # Deploy
         #channel_id = '798147472873750552'  # Dev
-        user_allowed = 498578445081509889
+        user_allowed = 498578445081509889   # me only
         
         if ctx.author.id == user_allowed :
             # Convert the provided date and time arguments into a datetime object
@@ -102,7 +102,7 @@ class Couscous(commands.Cog, name="Couscous"):
             await ctx.send("MAJ !")
         
         else : 
-            await ctx.send("@498578445081509889 -- recap pliz")
+            await ctx.send("Recap pliz")
 
 
     @commands.command(name="recap", help="Récap des scores")
@@ -128,6 +128,37 @@ class Couscous(commands.Cog, name="Couscous"):
         message_content += "Dernière M.À.J : " + last_modif_datetime.strftime("%d/%m/%Y - %H:%M")
         
         await ctx.send(message_content)
+      
+        
+    @commands.command(name="ajout", help="Ajoute des points à la main")
+    async def ajout(self, ctx, 
+                    user: discord.User = commands.parameter(description="Mention de l'utilisateur"),
+                    category: str = commands.parameter(description="c / k / ck")):
+        
+        user_allowed = 498578445081509889 # me only
+        
+        if ctx.author.id == user_allowed :
+            timestamp = ctx.message.created_at
+            month = timestamp.month
+            
+            if category == "c" :
+                cat_format = "couscous"
+            elif category == "k" :
+                cat_format = "kayak"
+            elif category == "ck" :
+                cat_format = "ck"
+            else :
+                cat_format = "bad"                
+            
+            if cat_format != "bad" :
+                add_one_point(user.name, month, cat_format)
+                await ctx.send("Updated !")
+            else : 
+                await ctx.send("Mauvaise entrée")
+        else :
+            await ctx.send("Not authorized")
+            
+            
     
 
 ###########################################################################################################################################
