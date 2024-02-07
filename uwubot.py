@@ -13,6 +13,23 @@ from couscous_process import run_couscous_update, add_one_point
 # use for di / cri function currently disabled
 
 
+# month map
+month_map = {
+    "janvier": 1,
+    "fevrier": 2,
+    "mars": 3,
+    "avril": 4,
+    "mai": 5,
+    "juin": 6,
+    "juillet": 7,
+    "aout": 8,
+    "septembre": 9,
+    "octobre": 10,
+    "novembre": 11,
+    "decembre": 12
+}
+
+
 # Load Token
 with open("token", "r") as token_file:
     TOKEN = token_file.read().strip()
@@ -26,7 +43,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 
 
-def parse_csv_file(file_path):
+def parse_global_csv_file(file_path):
     user_counts = {}
         
     with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
@@ -44,6 +61,80 @@ def parse_csv_file(file_path):
             user_counts[user] = counts
 
     return user_counts
+
+
+# /!\ month must be int
+def parse_partial_csv_file(file_path, month):
+    user_count = {}
+    
+    with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=';')
+        
+        for row in reader:
+            user = row['User']
+            counts = int(row[str(month)])
+            user_count[user] = counts
+        
+    return user_count
+
+
+def full_recap ():
+        parsed_results = parse_global_csv_file("./results/global.csv")
+        parsed_sorted = dict(sorted(parsed_results.items(), key=lambda item: item[1]['Total'], reverse=True))
+        
+        user_l = "User"
+        filler = "-"
+        
+        message_content = "# Scores\n"
+        message_content += "```"+user_l.ljust(18, " ")+"| Couscous | Kayak | Combo | Total\n"
+        message_content+= filler.ljust(52, "-") + "\n"
+        
+        for user in parsed_sorted:
+            message_content += user.ljust(18, " ") +"| " + str(parsed_sorted[user]["couscous"]).ljust(8, " ")+" | " +str(parsed_sorted[user]["kayak"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["ck"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["Total"]) +"\n"
+        
+        message_content += "```"
+        
+        last_modif_ts = os.path.getmtime("./results/global.csv")
+        last_modif_datetime = datetime.fromtimestamp(last_modif_ts)
+        
+        message_content += "Dernière M.À.J : " + last_modif_datetime.strftime("%d/%m/%Y - %H:%M")
+        
+        return message_content
+
+
+def month_recap (month:int):
+        parsed_couscous = parse_partial_csv_file("./results/global-couscous.csv", month)
+        parsed_kayak = parse_partial_csv_file("./results/global-kayak.csv", month)
+        parsed_ck = parse_partial_csv_file("./results/global-ck.csv", month)
+        
+        user_values = {}
+        for user in parsed_couscous:
+            couscous_value = parsed_couscous.get(user, 0)
+            kayak_value = parsed_kayak.get(user, 0)
+            ck_value = parsed_ck.get(user, 0)
+            total_value = couscous_value + kayak_value + ck_value
+            user_values[user] = (couscous_value, kayak_value, ck_value, total_value)
+
+        sorted_results = dict(sorted(user_values.items(), key=lambda item: item[1][3], reverse=True))
+        
+        user_l = "User"
+        filler = "-"
+        
+        message_content = "# Scores\n"
+        message_content += "```"+user_l.ljust(18, " ")+"| Couscous | Kayak | Combo | Total\n"
+        message_content+= filler.ljust(52, "-") + "\n"
+        
+        for user in sorted_results:
+            message_content += user.ljust(18, " ") +"| " + str(sorted_results[user][0]).ljust(8, " ")+" | " +str(sorted_results[user][1]).ljust(5, " ") +" | " +str(sorted_results[user][2]).ljust(5, " ") +" | " +str(sorted_results[user][3]) +"\n"
+        
+        message_content += "```"
+        
+        last_modif_ts = os.path.getmtime("./results/global.csv")
+        last_modif_datetime = datetime.fromtimestamp(last_modif_ts)
+        
+        message_content += "Dernière M.À.J : " + last_modif_datetime.strftime("%d/%m/%Y - %H:%M")
+        
+        return message_content
 
 
 
@@ -103,29 +194,20 @@ class Couscous(commands.Cog, name="Couscous"):
         
         else : 
             await ctx.send("Recap pliz")
+        
 
 
-    @commands.command(name="recap", help="Récap des scores")
-    async def recap(self, ctx):
-        parsed_results = parse_csv_file("./results/global.csv")
-        parsed_sorted = dict(sorted(parsed_results.items(), key=lambda item: item[1]['Total'], reverse=True))
-        
-        user_l = "User"
-        filler = "-"
-        
-        message_content = "# Scores\n"
-        message_content += "```"+user_l.ljust(18, " ")+"| Couscous | Kayak | Combo | Total\n"
-        message_content+= filler.ljust(52, "-") + "\n"
-        
-        for user in parsed_sorted:
-            message_content += user.ljust(18, " ") +"| " + str(parsed_sorted[user]["couscous"]).ljust(8, " ")+" | " +str(parsed_sorted[user]["kayak"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["ck"]).ljust(5, " ") +" | " +str(parsed_sorted[user]["Total"]) +"\n"
-        
-        message_content += "```"
-        
-        last_modif_ts = os.path.getmtime("./results/global.csv")
-        last_modif_datetime = datetime.fromtimestamp(last_modif_ts)
-        
-        message_content += "Dernière M.À.J : " + last_modif_datetime.strftime("%d/%m/%Y - %H:%M")
+    @commands.command(name="recap", help="Récap des scores (optionnel : mention du mois)")
+    async def recap(self, ctx, 
+                    month:str = None):
+        if month is None:
+            message_content = full_recap()
+        else :
+            month_number = month_map.get(month.lower(), None) 
+            if month_number != None :
+                message_content = month_recap(month_number)
+            else : 
+                message_content = "Ecris correctement le mois débilus !"
         
         await ctx.send(message_content)
       
