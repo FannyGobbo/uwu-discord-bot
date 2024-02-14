@@ -271,9 +271,25 @@ class Custom(commands.Cog, name="Custom Commands"):
     
     @commands.command(name="wannadie", help="L'image que Fanny met tout le temps quand elle est au bout de sa vie")
     async def wannadie(self, ctx):
-        img_path = "./images/enviedecaner.jpg"
+        rand = random.random()
+        if rand < 0.5:
+            img_path = "./images/enviedecaner.jpg"
+        else:
+            img_path = "./images/wannadie.jpg"
+
         with open(img_path, 'rb') as image_file:
             await ctx.send(file=discord.File(image_file, 'image.jpg'))
+            
+    @commands.command(name="mb", helps="MENTAL BREAKDANCE (pliz send help)")
+    async def mb(self, ctx):
+        rand = random.random()
+        if rand < 0.5:
+            img_path = "./images/mental-breakdance.gif"
+        else:
+            img_path = "./images/mental-breakdance2.gif"
+
+        with open(img_path, 'rb') as image_file:
+            await ctx.send(file=discord.File(image_file, 'meantal-breakdance.gif'))
 
 
 ###########################################################################################################################################
