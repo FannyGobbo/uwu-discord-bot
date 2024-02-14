@@ -280,7 +280,7 @@ class Custom(commands.Cog, name="Custom Commands"):
         with open(img_path, 'rb') as image_file:
             await ctx.send(file=discord.File(image_file, 'image.jpg'))
             
-    @commands.command(name="mb", helps="MENTAL BREAKDANCE (pliz send help)")
+    @commands.command(name="mb", help="MENTAL BREAKDANCE (pliz send help)")
     async def mb(self, ctx):
         rand = random.random()
         if rand < 0.5:
