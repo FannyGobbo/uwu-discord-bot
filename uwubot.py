@@ -9,6 +9,7 @@ from couscous_process import run_couscous_update, add_one_point
 
 
 # Constantes
+ADMIN_ID = 498578445081509889
 # PROC_CHANCE = 0.25
 # use for di / cri function currently disabled
 
@@ -41,7 +42,7 @@ intents.messages = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 
-
+########################################################################################################################################### USEFUL FUNCTIONS
 
 def parse_global_csv_file(file_path):
     user_counts = {}
@@ -156,9 +157,8 @@ class Couscous(commands.Cog, name="Couscous"):
                     mm: int = commands.parameter(description="Minutes")):
         channel_id = '1159147161255161906' # Deploy
         #channel_id = '798147472873750552'  # Dev
-        user_allowed = 498578445081509889   # me only
         
-        if ctx.author.id == user_allowed :
+        if ctx.author.id == ADMIN_ID :
             # Convert the provided date and time arguments into a datetime object
             start_date = datetime(yyyy, MM, dd, hh, mm, 0)
             end_date = datetime.utcnow()
@@ -217,9 +217,7 @@ class Couscous(commands.Cog, name="Couscous"):
                     user: discord.User = commands.parameter(description="Mention de l'utilisateur"),
                     category: str = commands.parameter(description="c / k / ck")):
         
-        user_allowed = 498578445081509889 # me only
-        
-        if ctx.author.id == user_allowed :
+        if ctx.author.id == ADMIN_ID :
             timestamp = ctx.message.created_at
             month = timestamp.month
             

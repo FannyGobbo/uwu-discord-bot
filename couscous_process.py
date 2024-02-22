@@ -5,6 +5,9 @@ import hashlib
 import sys
 import os
 
+
+############################################################################################################################## BASIC FUNCTIONS
+
 # Function to check if a time is a palindrome
 def time_palindrome(hour, minutes):
     str_num1 = str(hour)
@@ -39,7 +42,7 @@ def is_ck(s) :
 
 
 
-##############################################################################################################################
+############################################################################################################################## LOADING CSV FUNCTIONS
 
 
 
@@ -64,6 +67,20 @@ def load_results_from_csv():
         results[category] = category_dict
         
     return results
+
+
+def load_timestamps():
+    filepath = "./timestamps.csv"
+    result = {}
+    
+    with open(filepath, 'r', newline='', encoding='utf-8') as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=';')
+        
+        for row in reader:
+            user = row['User']
+            result[user] = int(row['time-diff'])
+    
+    return result
 
 
 # Save results to a CSV file for a specific category (couscous, kayak, couscous_kayak)
@@ -99,9 +116,7 @@ def save_global_results(yearly_totals, global_totals):
                writer.writerow([user] + [str(yearly_totals[category][user]) for category in ['couscous', 'kayak', 'ck']] + [str(global_totals[user])])
 
 
-
-
-##############################################################################################################################
+############################################################################################################################## PROCESS
 
 
 def format_time(hour, minutes):
@@ -121,31 +136,43 @@ def format_time(hour, minutes):
 def process_csv(file_path, user_counts):
     with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file)
-        timestamp_list = []
+        timestamp_dict = {
+            'fr': [],
+            'sf': []
+        }
+        time_diff = load_timestamps()
 
         for row in reader:
             # Convert timestamp to datetime object
             timestamp = datetime.strptime(row['timestamp'], '%d/%m %H:%M')
             user = row['user'].lower()
-            message = str(row['message']).lower()
-            hour = (timestamp.hour + 1) %24                                                       # Winter time, to be changed
-            minutes = timestamp.minute
-            hour, minutes = format_time(hour, minutes)
             
-            if (len(message) > 3) and not(timestamp_list and (timestamp_list[-1] == timestamp)) :
-                if hour == minutes:
-                    if time_palindrome(hour, minutes):
-                        if is_ck(message):  
-                            user_counts['ck'][timestamp.month][user] += 1
-                            timestamp_list.append(timestamp)
-                    else :
-                        if is_couscous(message):
-                            user_counts['couscous'][timestamp.month][user] += 1
-                            timestamp_list.append(timestamp)
-                elif time_palindrome(hour, minutes):
-                    if is_kayak(message) :
-                        user_counts['kayak'][timestamp.month][user] += 1
-                        timestamp_list.append(timestamp)
+            if user in list(time_diff.keys()):
+                message = str(row['message']).lower()
+                hour = (timestamp.hour + time_diff[user]) %24                                                       # Winter time, to be changed
+                minutes = timestamp.minute
+                hour, minutes = format_time(hour, minutes)
+            
+                if user == "skynox11":
+                    place = 'sf'
+                else :
+                    place = 'fr'
+                
+                
+                if (len(message) > 3) and not(timestamp_dict[place] and (timestamp_dict[place] == timestamp)) :
+                    if hour == minutes:
+                        if time_palindrome(hour, minutes):
+                            if is_ck(message):  
+                                user_counts['ck'][timestamp.month][user] += 1
+                                timestamp_dict[place].append(timestamp)
+                        else :
+                            if is_couscous(message):
+                                user_counts['couscous'][timestamp.month][user] += 1
+                                timestamp_dict[place].append(timestamp)
+                    elif time_palindrome(hour, minutes):
+                        if is_kayak(message) :
+                            user_counts['kayak'][timestamp.month][user] += 1
+                            timestamp_dict[place].append(timestamp)
 
 
     return user_counts
@@ -161,7 +188,7 @@ def calculate_yearly_totals(user_counts):
     return yearly_totals
 
 
-##############################################################################################################################
+############################################################################################################################## MAIN FUNCTION
 
 def run_couscous_update (file_path):
     user_counts = load_results_from_csv()
@@ -203,6 +230,25 @@ def add_one_point (username, month, category):
 
     save_global_results(yearly_totals, global_totals)
     
+
+def add_n_points (username, month, category, amount):
+    user_counts = load_results_from_csv()
+    
+    user_counts[category][month][username] += amount
+    
+    # Calculate yearly totals
+    yearly_totals = {category: calculate_yearly_totals(user_counts[category]) for category in ['couscous', 'kayak', 'ck']}
+    
+    global_totals = defaultdict(int)
+    for user in yearly_totals["couscous"] :
+        value = 0
+        for category in ['couscous', 'kayak', 'ck']:
+            value += yearly_totals[category][user]
+        global_totals[user] = value
+    
+    save_results_to_csv(user_counts, yearly_totals)
+
+    save_global_results(yearly_totals, global_totals)
     
 
 
