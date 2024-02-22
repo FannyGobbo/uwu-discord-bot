@@ -5,7 +5,7 @@ import csv
 import re
 import random
 import os
-from couscous_process import run_couscous_update, add_one_point
+from couscous_process import run_couscous_update, add_one_point, add_n_points
 
 
 # Constantes
@@ -237,6 +237,34 @@ class Couscous(commands.Cog, name="Couscous"):
                 await ctx.send("Mauvaise entrée")
         else :
             await ctx.send("Not authorized")
+       
+    @commands.command(name="ajoutN", help="Ajoute plusieurs points à la main")   
+    async def ajoutN (self, ctx, 
+                      user: discord.User = commands.parameter(description="Mention de l'utilisateur"),
+                      category: str = commands.parameter(description="c / k / ck"),
+                      amount: int = commands.parameter(description="Nombre à ajouter")):
+        
+        if ctx.author.id == ADMIN_ID :
+            timestamp = ctx.message.created_at
+            month = timestamp.month
+            
+            if category == "c" :
+                cat_format = "couscous"
+            elif category == "k" :
+                cat_format = "kayak"
+            elif category == "ck" :
+                cat_format = "ck"
+            else :
+                cat_format = "bad"                
+            
+            if cat_format != "bad" :
+                add_n_points(user.name, month, cat_format, amount)
+                await ctx.send("Updated !")
+            else : 
+                await ctx.send("Mauvaise entrée")
+        else :
+            await ctx.send("Not authorized")
+        
             
             
     

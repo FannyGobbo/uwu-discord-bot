@@ -233,7 +233,7 @@ def add_one_point (username, month, category):
 
 def add_n_points (username, month, category, amount):
     user_counts = load_results_from_csv()
-    
+
     user_counts[category][month][username] += amount
     
     # Calculate yearly totals
