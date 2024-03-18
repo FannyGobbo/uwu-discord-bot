@@ -39,6 +39,17 @@ def is_ck(s) :
     else:
         return False
         
+        
+def format_time(hour, minutes):
+    if hour < 10:
+        out_h = "0" + str(hour)
+    else:
+        out_h = str(hour)
+    if minutes < 10:
+        out_m = "0" + str(minutes)
+    else :
+        out_m = str(minutes)
+    return out_h, out_m
 
 
 
@@ -119,18 +130,6 @@ def save_global_results(yearly_totals, global_totals):
 ############################################################################################################################## PROCESS
 
 
-def format_time(hour, minutes):
-    if hour < 10:
-        out_h = "0" + str(hour)
-    else:
-        out_h = str(hour)
-    if minutes < 10:
-        out_m = "0" + str(minutes)
-    else :
-        out_m = str(minutes)
-    return out_h, out_m
-
-
 
 # Process the new CSV file and update counts for a specific category (couscous, kayak, couscous_kayak)
 def process_csv(file_path, user_counts):
@@ -177,6 +176,7 @@ def process_csv(file_path, user_counts):
 
     return user_counts
 
+
 # Calculate yearly totals for a specific category (couscous, kayak, couscous_kayak)
 def calculate_yearly_totals(user_counts):
     yearly_totals = defaultdict(int)
@@ -186,6 +186,47 @@ def calculate_yearly_totals(user_counts):
             yearly_totals[user] += count
 
     return yearly_totals
+
+
+############################################################################################################################## UPDATE FUNCTIONS
+
+def update_time_diff(user, new_tz):
+    timezones = load_timestamps()
+    
+    timezones[user] = new_tz
+    
+    with open('timestamps.csv', 'w', newline='') as file:
+        writer = csv.writer(file, delimiter=';')
+        writer.writerow(['User', 'time-diff'])  # Write header
+        for user, time_diff in timezones.items():
+            writer.writerow([user, time_diff])
+
+
+        
+def add_user_to_game(user):
+    categories = ['couscous', 'kayak', 'ck']
+    
+    for category in categories:
+        file_path = f'./results/global-{category}.csv'
+        with open(file_path, 'a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file, delimiter=';')
+            writer.writerow([user] + [0] * 13)
+    
+    # add tow to global
+    with open("./results/global.csv", 'a', newline='') as file:
+        writer = csv.writer(file, delimiter=";")
+        writer.writerow([user] + [0] * 4)
+    
+    # add row to timestamps
+    with open('timestamps.csv', 'a', newline='') as file:
+        writer = csv.writer(file, delimiter=';')
+        writer.writerow([user, 1])
+        
+    
+    
+    
+
+
 
 
 ############################################################################################################################## MAIN FUNCTION

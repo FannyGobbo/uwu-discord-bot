@@ -5,7 +5,7 @@ import csv
 import re
 import random
 import os
-from couscous_process import run_couscous_update, add_one_point, add_n_points
+from couscous_process import run_couscous_update, add_one_point, add_n_points, add_user_to_game, update_time_diff
 
 
 # Constantes
@@ -264,6 +264,24 @@ class Couscous(commands.Cog, name="Couscous"):
                 await ctx.send("Mauvaise entrée")
         else :
             await ctx.send("Not authorized")
+            
+            
+    @commands.command(name='newTZ', help="update la timezone d'un utilisateur")
+    async def newTZ(self, ctx,
+                    user: discord.User = commands.parameter(description="Mention de l'utilisateur"), 
+                    tz : int = commands.parameter(description="différence entre discord et la timezone")):
+        timezone = (tz + 24) % 24 # put it positive
+        
+        update_time_diff(user.name, timezone)
+        
+        await ctx.send("Modifié !")
+        
+    @commands.command(name='addUser', help="here comes a new challenger")
+    async def addUser(self, ctx, 
+                      user : discord.User = commands.parameter(description="Mention de l'utilisateur")):
+        add_user_to_game(user)
+        
+        await ctx.send("Ajouté !")
         
             
             
